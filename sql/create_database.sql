@@ -1,0 +1,1 @@
+CREATE DATABASE api OWNER postgres ENCODING 'utf-8';

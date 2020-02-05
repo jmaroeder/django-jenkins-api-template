@@ -1,0 +1,16 @@
+# overrides for CI
+version: "3.6"
+services:
+  web:
+    build:
+      context: .
+      target: ci_build
+    environment:
+      DJANGO_ENV: ci
+    volumes:
+      - ./test-results/:/usr/src/app/test-results/
+
+  web-deployable:
+    build:
+      context: .
+      target: deployable_build

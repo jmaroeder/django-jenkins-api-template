@@ -1,0 +1,32 @@
+# base docker-compose file
+version: "3.6"
+services:
+  db:
+    image: "postgres:alpine"
+    ports:
+      - 5432
+    restart: unless-stopped
+    volumes:
+      - ./docker/db/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
+
+  wait:
+    image: "jwilder/dockerize"
+    command: ["-wait", "tcp://db:5432"]
+
+  web:
+    build:
+      context: .
+      target: dev_build
+    depends_on:
+      - db
+    environment:
+      DB_URL: postgres://postgres@db
+      DJANGO_ENV: dev
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      test: curl --fail http://localhost:8000/live || exit 1
+      timeout: 5s
+    ports:
+      - 8000
